@@ -60,7 +60,7 @@ namespace Calculator.Tests
             }
 
             // Verify that having too many ')' throws an ArithmeticException
-            Assert.ThrowsException<ArithmeticException>(() => Standardizer.FixBrackets("(32*7)+4(3)+17)"));
+            Assert.ThrowsException<BracketsError>(() => Standardizer.FixBrackets("(32*7)+4(3)+17)"));
         }
 
         /// <summary>
