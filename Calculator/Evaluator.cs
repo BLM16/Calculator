@@ -4,7 +4,10 @@ using System.Text;
 
 namespace Calculator
 {
-    class Evaluator
+    /// <summary>
+    /// Class to evaluate math in a string.
+    /// </summary>
+    public static class Evaluator
     {
     }
 }

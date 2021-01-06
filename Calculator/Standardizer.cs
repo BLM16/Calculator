@@ -4,8 +4,16 @@ using System.Linq;
 
 namespace Calculator
 {
-    class Standardizer
+    /// <summary>
+    /// Class to standardize math in a string.
+    /// </summary>
+    public static class Standardizer
     {
+        /// <summary>
+        /// Handles calling the required methods in order to properly standardize the math in a string.
+        /// </summary>
+        /// <param name="eq">The equation to standardize.</param>
+        /// <returns>The standardized string.</returns>
         public static string Standardize(string eq)
         {
             eq = eq.Replace(" ", "");
@@ -23,13 +31,16 @@ namespace Calculator
         /// </summary>
         /// <param name="eq">The equation to be fixed.</param>
         /// <returns>The fixed equation.</returns>
-        private static string FixBrackets(string eq)
+        public static string FixBrackets(string eq)
         {
             int lBrack = 0, rBrack = 0;
-            char[] eqList = eq.ToCharArray();
+
+            // Check if the last char is a '(' and remove it
+            if (eq[eq.Length - 1] == '(')
+                eq = eq.Remove(eq.Length - 1);
 
             // Count the number of brackets
-            foreach (char c in eqList)
+            foreach (char c in eq)
             {
                 if (c == '(') lBrack++;
                 if (c == ')') rBrack++;
@@ -40,9 +51,7 @@ namespace Calculator
                 throw new ArithmeticException("Brackets don't match");
             else if (lBrack > rBrack)
                 for (int i = rBrack; i < lBrack; i++)
-                {
                     eq += ")";
-                }
 
             return eq;
         }
@@ -52,7 +61,7 @@ namespace Calculator
         /// </summary>
         /// <param name="eq">The equation to standardize operators for.</param>
         /// <returns>The operator standardized equation.</returns>
-        private static string ReplaceSpecChars(string eq)
+        public static string ReplaceSpecChars(string eq)
         {
             // Replace square root "operators" with a standard: @
             eq = eq.Replace("root", "@");
@@ -70,7 +79,7 @@ namespace Calculator
         /// </summary>
         /// <param name="eq">The equation to add multiplication operators to.</param>
         /// <returns>The equation with the added multiplication signs.</returns>
-        private static string AddMultSigns(string eq)
+        public static string AddMultSigns(string eq)
         {
             List<char> standard = new List<char>(eq.ToCharArray());
             string nums = "0123456789";
@@ -78,7 +87,7 @@ namespace Calculator
             // For each char in the equation check if a multiplication sign needs to be inserted
             for (int i = 0; i < standard.Count; i++)
             {
-                if (standard[i] == '(' && i - 1 >= 0 && nums.Contains(standard[i - 1]))
+                if (standard[i] == '(' && i - 1 >= 0 && (nums.Contains(standard[i - 1]) || standard[i - 1] == ')'))
                     standard.Insert(i, '*');
 
                 if (standard[i] == '@' && i - 1 >= 0 && nums.Contains(standard[i - 1]))
@@ -91,9 +100,7 @@ namespace Calculator
                     standard.Insert(i, '*');
             }
 
-            eq = string.Join("", standard);
-
-            return eq;
+            return string.Join("", standard);
         }
     }
 }
