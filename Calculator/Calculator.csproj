@@ -3,9 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Bradley Myers</Authors>
-    <Company />
     <Copyright>Copyright (c) 2020 - Bradley Myers. All rights reserved.</Copyright>
-    <PackageProjectUrl></PackageProjectUrl>
     <RepositoryUrl>https://github.com/BLM16/Calculator.git</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
   </PropertyGroup>

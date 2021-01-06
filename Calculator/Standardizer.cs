@@ -48,7 +48,7 @@ namespace Calculator
 
             // Fix brackets where possible or throw illegal syntax error
             if (rBrack > lBrack)
-                throw new ArithmeticException("Brackets don't match");
+                throw new BracketsError("Brackets don't match");
             else if (lBrack > rBrack)
                 for (int i = rBrack; i < lBrack; i++)
                     eq += ")";
