@@ -26,8 +26,8 @@ namespace Calculator
         }
 
         /// <summary>
-        /// Fixes brackets in an equation by adding ones to the end if possible.
-        /// Else it throws an error for unmatching brackets.
+        /// <para>Fixes brackets in an equation by adding ones to the end if possible.</para>
+        /// <para>Throws an error for unmatching brackets otherwise.</para>
         /// </summary>
         /// <param name="eq">The equation to be fixed.</param>
         /// <returns>The fixed equation.</returns>
@@ -40,7 +40,7 @@ namespace Calculator
                 eq = eq.Remove(eq.Length - 1);
 
             // Count the number of brackets
-            foreach (char c in eq)
+            foreach (var c in eq)
             {
                 if (c == '(') lBrack++;
                 if (c == ')') rBrack++;
@@ -90,13 +90,10 @@ namespace Calculator
                 if (standard[i] == '(' && i - 1 >= 0 && (nums.Contains(standard[i - 1]) || standard[i - 1] == ')'))
                     standard.Insert(i, '*');
 
-                if (standard[i] == '@' && i - 1 >= 0 && nums.Contains(standard[i - 1]))
+                if (standard[i] == '@' && i - 1 >= 0 && (nums.Contains(standard[i - 1]) || standard[i - 1] == ')'))
                     standard.Insert(i, '*');
 
                 if (nums.Contains(standard[i]) && i - 1 >= 0 && standard[i - 1] == ')')
-                    standard.Insert(i, '*');
-
-                if (standard[i] == '@' && i - 1 >= 0 && standard[i - 1] == ')')
                     standard.Insert(i, '*');
             }
 

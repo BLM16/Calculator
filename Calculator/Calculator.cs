@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Calculator
+﻿namespace Calculator
 {
     /// <summary>
     /// Class calculates math in a string. Calls required methods in order.
