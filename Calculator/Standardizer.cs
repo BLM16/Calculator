@@ -67,9 +67,9 @@ namespace Calculator
             eq = eq.Replace("root", "@");
             eq = eq.Replace("√", "@");
 
-            // Replace pi "operators" with pi's value
-            eq = eq.Replace("pi", Math.PI.ToString());
-            eq = eq.Replace("π", Math.PI.ToString());
+            // Replace pi "operators" with a standard: #
+            eq = eq.Replace("pi", "#");
+            eq = eq.Replace("π", "#");
 
             return eq;
         }
@@ -90,10 +90,16 @@ namespace Calculator
                 if (standard[i] == '(' && i - 1 >= 0 && (nums.Contains(standard[i - 1]) || standard[i - 1] == ')'))
                     standard.Insert(i, '*');
 
+                if (nums.Contains(standard[i]) && i - 1 >= 0 && standard[i - 1] == ')')
+                    standard.Insert(i, '*');
+
                 if (standard[i] == '@' && i - 1 >= 0 && (nums.Contains(standard[i - 1]) || standard[i - 1] == ')'))
                     standard.Insert(i, '*');
 
-                if (nums.Contains(standard[i]) && i - 1 >= 0 && standard[i - 1] == ')')
+                if (standard[i] == '#' && i - 1 >= 0 && (nums.Contains(standard[i - 1]) || standard[i - 1] == ')'))
+                    standard.Insert(i, '*');
+
+                if ((nums.Contains(standard[i]) || standard[i] == '(') && i - 1 >= 0 && standard[i - 1] == '#')
                     standard.Insert(i, '*');
             }
 

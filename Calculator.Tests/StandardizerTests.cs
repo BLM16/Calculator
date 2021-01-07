@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 
 namespace Calculator.Tests
 {
@@ -17,8 +16,8 @@ namespace Calculator.Tests
             // { equation, expected }
             string[,] eqs = {
                 { "34 + 97 * 3 - 7", "34+97*3-7" },
-                { "π (root(3(7) / 4) + 2)(97(22-3/4) * 6^2)root((12 + 2) 3) - 3 (12 + 2) √(pi)(", $"{Math.PI}*(@(3*(7)/4)+2)*(97*(22-3/4)*6^2)*@((12+2)*3)-3*(12+2)*@({Math.PI})" },
-                { "(24 root(7) + (14^2 - 3) 11", "(24*@(7)+(14^2-3)*11)" }
+                { "π (root(3(7) / 4) + 2)(97(22-3/4) * 6^2)root((12 + 2) 3) - 3 (12 + 2) √(pi)(", "#*(@(3*(7)/4)+2)*(97*(22-3/4)*6^2)*@((12+2)*3)-3*(12+2)*@(#)" },
+                { "(24 root(7) + (14^2 - pi3) 11pi", "(24*@(7)+(14^2-#*3)*11*#)" }
             };
 
             // For each equation in eqs verify that the actual result == expected result
@@ -75,8 +74,8 @@ namespace Calculator.Tests
             string[,] eqs = {
                 { "(35+7)root(9)", "(35+7)@(9)" },
                 { "(35+7)√(9)", "(35+7)@(9)" },
-                { "14(32-7)/pi", $"14(32-7)/{Math.PI}" },
-                { "14(32-7)/π", $"14(32-7)/{Math.PI}" }
+                { "14(32-7)/pi", "14(32-7)/#" },
+                { "14(32-7)/π", "14(32-7)/#" }
             };
 
             // For each equation in eqs verify that the actual result == expected result
@@ -106,9 +105,10 @@ namespace Calculator.Tests
             string[,] eqs = {
                 { "36(2+3(7))", "36*(2+3*(7))" },
                 { "(14-8)(6+7)+9", "(14-8)*(6+7)+9" },
+                { "17+(32-14)4", "17+(32-14)*4" },
                 { "(23+34)+9@(14)", "(23+34)+9*@(14)" },
                 { "11-(2+9)@(7)", "11-(2+9)*@(7)" },
-                { "17+(32-14)4", "17+(32-14)*4" }
+                { "136#+2#", "136*#+2*#" }
             };
 
             // For each equation in eqs verify that the actual result == expected result
