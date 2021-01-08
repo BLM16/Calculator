@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Calculator
 {
@@ -35,9 +35,9 @@ namespace Calculator
         {
             int lBrack = 0, rBrack = 0;
 
-            // Check if the last char is a '(' and remove it
-            if (eq[eq.Length - 1] == '(')
-                eq = eq.Remove(eq.Length - 1);
+            // Strip all '(' at the end of the equation if any
+            var endLBrackPattern = new Regex(@"\(+$");
+            eq = endLBrackPattern.Replace(eq, "");
 
             // Count the number of brackets
             foreach (var c in eq)
@@ -48,7 +48,7 @@ namespace Calculator
 
             // Fix brackets where possible or throw illegal syntax error
             if (rBrack > lBrack)
-                throw new BracketsException("Brackets don't match");
+                throw new MathSyntaxError("Too many right brackets");
             else if (lBrack > rBrack)
                 for (int i = rBrack; i < lBrack; i++)
                     eq += ")";
@@ -63,12 +63,16 @@ namespace Calculator
         /// <returns>The operator standardized equation.</returns>
         public static string ReplaceSpecChars(string eq)
         {
+            var rootPattern = new Regex("root", RegexOptions.IgnoreCase);
+            var piPattern = new Regex("pi", RegexOptions.IgnoreCase);
+
             // Replace square root "operators" with a standard: @
-            eq = eq.Replace("root", "@");
+            eq = rootPattern.Replace(eq, "@");
             eq = eq.Replace("√", "@");
 
+
             // Replace pi "operators" with a standard: #
-            eq = eq.Replace("pi", "#");
+            eq = piPattern.Replace(eq, "#");
             eq = eq.Replace("π", "#");
 
             return eq;

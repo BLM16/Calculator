@@ -8,7 +8,7 @@ This code was made to evaluate a string math equation. Following all the rules o
 
 Developer: [Bradley Myers](https://github.com/BLM16/)
 
-Date created: 2021-01-06 | Last updated: 2021-01-06
+Date created: 2021-01-06 | Last updated: 2021-01-08
 
 ## License
 This code is licensed under the [MIT License](./LICENSE)
