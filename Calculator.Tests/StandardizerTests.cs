@@ -187,6 +187,20 @@ namespace Calculator.Tests
         }
 
         /// <summary>
+        /// Checks that '@' after '#' get a multiplication sign inserted.
+        /// </summary>
+        [TestMethod]
+        public void AddMultSigns_RootAfterPiInsertsAsterix()
+        {
+            var equation = "155315(#@(14)(37^3))";
+            var expected = "155315*(#*@(14)*(37^3))";
+
+            var actual = Standardizer.AddMultSigns(equation);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        /// <summary>
         /// Checks that '#' after numbers and brackets get a multiplication sign inserted.
         /// </summary>
         /// <param name="equation">Equation to test.</param>

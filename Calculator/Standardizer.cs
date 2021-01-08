@@ -97,7 +97,7 @@ namespace Calculator
                 if (nums.Contains(standard[i]) && i - 1 >= 0 && standard[i - 1] == ')')
                     standard.Insert(i, '*');
 
-                if (standard[i] == '@' && i - 1 >= 0 && (nums.Contains(standard[i - 1]) || standard[i - 1] == ')'))
+                if (standard[i] == '@' && i - 1 >= 0 && (nums.Contains(standard[i - 1]) || standard[i - 1] == ')' || standard[i - 1] == '#'))
                     standard.Insert(i, '*');
 
                 if (standard[i] == '#' && i - 1 >= 0 && (nums.Contains(standard[i - 1]) || standard[i - 1] == ')'))
