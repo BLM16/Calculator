@@ -140,6 +140,34 @@ namespace Calculator.Tests
             Assert.AreEqual(expected, actual);
         }
 
+        /// <summary>
+        /// Checks that the multiplication sign gets replaced with an '*' sign.
+        /// </summary>
+        [TestMethod]
+        public void ReplaceSpecChars_ConvertsMultiplicationSignToAtSign()
+        {
+            var equation = "22+63×(2+7)";
+            var expected = "22+63*(2+7)";
+
+            var actual = Standardizer.ReplaceSpecChars(equation);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        /// <summary>
+        /// Checks that the division sign gets replaced with an '/' sign.
+        /// </summary>
+        [TestMethod]
+        public void ReplaceSpecChars_ConvertsDivisionSignToSlash()
+        {
+            var equation = "32+7÷(13-4)";
+            var expected = "32+7/(13-4)";
+
+            var actual = Standardizer.ReplaceSpecChars(equation);
+
+            Assert.AreEqual(expected, actual);
+        }
+
         #endregion
 
         #region AddMultSigns

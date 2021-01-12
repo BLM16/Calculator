@@ -75,6 +75,10 @@ namespace Calculator
             eq = piPattern.Replace(eq, "#");
             eq = eq.Replace("π", "#");
 
+            // Replace multiplication and division signs with the standards: * and /
+            eq = eq.Replace("×", "*");
+            eq = eq.Replace("÷", "/");
+
             return eq;
         }
 
