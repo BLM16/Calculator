@@ -63,9 +63,13 @@ namespace Calculator
         public static string Solve(string eq)
         {
             var bracketPattern = new Regex(@"(?<!@)\((?<eq>\d+(\.\d+)?([\^@/\*\+\-])?\d+([\^@/\*\+\-0-9.]+)?)\)");
+            var numberBracketPattern = new Regex(@"(?<!@)\((?<num>\d+(\.\d+)?)\)");
 
             // Convert the standardized pi symbol to Math.PI
             eq = eq.Replace("#", Math.PI.ToString());
+
+            foreach (Match match in numberBracketPattern.Matches(eq))
+                eq = eq.Replace(match.Value, match.Groups["num"].Value);
 
             // Cycle through all the brackets following BEDMAS order and replace them with their solved version
             while (true)

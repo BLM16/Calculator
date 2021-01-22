@@ -6,35 +6,56 @@ namespace Calculator.Tests
     [TestClass]
     public class CalculatorTests
     {
+        #region Calculate
+
+        /// <summary>
+        /// Checks that equations are correctly standardized and evaluated.
+        /// </summary>
+        [TestMethod]
+        public void Calculate_EquationsAreStandardizedCorrectly()
+        {
+            var equation = "(97 - 27) / (7) + 14";
+            var expected = "24";
+
+            var actual = Calculator.Calculate(equation);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        /// <summary>
+        /// Checks that equations containing brackets are correctly evaluated.
+        /// </summary>
+        /// <param name="equation">Equation to test.</param>
+        /// <param name="expected">Expected result.</param>
         [DataTestMethod]
         [DataRow("156(piroot(7))^2", "10777.608005989581")]
         [DataRow("156(pi3)root(7+19)^2", "38226.8994088806")]
-        public void Calculate(string equation, string expected)
+        [DataRow("7(9+2)(5-2)/3", "77")]
+        public void Calculate_NestedEquationsEvalCorrectly(string equation, string expected)
         {
             var actual = Calculator.Calculate(equation);
             Assert.AreEqual(expected, actual);
         }
 
+        /// <summary>
+        /// Checks that equations containing multiple consecutive operations are evaluated correctly.
+        /// </summary>
+        /// <param name="equation">Equation to test.</param>
+        /// <param name="expected">Expected result.</param>
         [DataTestMethod]
-        [DataRow("@((4+4)^2)", "8")]
         [DataRow("@(@(32+9^2))", "3.260390438695134")]
-        [DataRow("@(@(@(81)))", "1.7320508075688772")]
-        [DataRow("@(16)*2", "8")]
-        public void SqrtTest(string equation, string expected)
-        {
-            var actual = Calculator.Solve(equation);
-            Assert.AreEqual(expected, actual);
-        }
-
-        [DataTestMethod]
         [DataRow("2^2^2", "16")]
+        [DataRow("27/3/3", "3")]
         [DataRow("3*3*3", "27")]
         [DataRow("2+2+7", "11")]
-        public void DoublesTest(string equation, string expected)
+        [DataRow("47-22-3", "22")]
+        public void Calculate_MultiplesEvalCorrectly(string equation, string expected)
         {
             var actual = Calculator.Calculate(equation);
             Assert.AreEqual(expected, actual);
         }
+
+        #endregion
 
         #region FindErrors
 
@@ -140,7 +161,7 @@ namespace Calculator.Tests
         [ExpectedException(typeof(DivideByZeroException))]
         public void Solve_ExceptionOnDivisionByZero()
         {
-            var equation = "321/0";
+            var equation = "321/(3-3)";
             Calculator.Solve(equation);
         }
 
