@@ -8,7 +8,7 @@ namespace Calculator
     /// </summary>
     public static class Calculator
     {
-        // Define regexes used for solving
+        // Define regexes used for solving equations
         private static readonly Regex bracketPattern = new Regex(@"(?<!@)\((?<eq>\d+(\.\d+)?([\^@/\*\+\-])?\d+([\^@/\*\+\-0-9.]+)?)\)");
         private static readonly Regex numberBracketPattern = new Regex(@"(?<!@)\((?<num>\d+(\.\d+)?)\)");
         private static readonly Regex sqrtRexex = new Regex(@"@\((?<eq>\d+(\.\d+)?([\^@/\*\+\-0-9.]+)?)\)");
@@ -23,11 +23,10 @@ namespace Calculator
         /// <returns>The calculated answer as a string.</returns>
         public static string Calculate(string eq)
         {
-            // Standardize the string to optimize the Evaluator
+            // Standardize the string to something the calculator can evaluate
             eq = Standardizer.Standardize(eq);
 
             // Find any errors in the equation
-            // Invalid chars, operators, etc
             FindErrors(eq);
 
             // Solve the standardized equation
@@ -42,9 +41,12 @@ namespace Calculator
         /// <param name="eq">Equation to check for errors in.</param>
         public static void FindErrors(string eq)
         {
+            // If the equation length is less than 1, there is no equation
+            // Throw a MathSyntaxError because we don't know what to do with it
             if (eq.Length < 1)
                 throw new MathSyntaxError("Equation too short to be valid");
 
+            // Loop through for every character in the equation to test for positional based errors
             for (int i = 0; i < eq.Length; i++)
             {
                 // Finds illegal chars
@@ -80,20 +82,24 @@ namespace Calculator
 
             while (true)
             {
+                // Remove brackets around just a number like "(86.2)"
                 foreach (Match match in numberBracketPattern.Matches(eq))
                     eq = eq.Replace(match.Value, match.Groups["num"].Value);
 
+                // Solve all square roots following BEDMAS
+                // Since this returns a value and doesn't affect other numbers, we can do this before brackets
                 if (sqrtRexex.Matches(eq).Count > 0)
                     eq = Sqrt(eq);
 
                 if (bracketPattern.Matches(eq).Count > 0)
                 {
+                    // If there are brackets to solve, solve them
                     var bracketEquation = bracketPattern.Match(eq);
-
                     eq = eq.Replace(bracketEquation.Value, Solve(bracketEquation.Value.Substring(1, bracketEquation.Length - 2)));
                 }
                 else
                 {
+                    // Call local BEDMAS functions to solve the equation
                     eq = Exponants(eq);
                     eq = DivMult(eq);
                     eq = AddSub(eq);
@@ -107,12 +113,15 @@ namespace Calculator
         /// Solves the square roots in the given equation.
         /// </summary>
         /// <param name="eq">Equation to solve.</param>
+        /// <returns>The equation with square roots evaluated.</returns>
         private static string Sqrt(string eq)
         {
+            // Keep looping while there are still square roots in the equation
             while (true)
             {
                 if (sqrtRexex.Matches(eq).Count > 0)
                 {
+                    // Get the first remaining square root's "contents" and evaluate them, then solve the square root
                     var match = sqrtRexex.Match(eq);
                     var num = double.Parse(Solve(match.Groups["eq"].Value));
                     eq = eq.Replace(match.Value, Math.Sqrt(num).ToString());
@@ -123,17 +132,21 @@ namespace Calculator
         }
 
         /// <summary>
-        /// Solves the exponents in the given equation.
+        /// Solves the exponants in the given equation.
         /// </summary>
         /// <param name="eq">Equation to solve.</param>
+        /// <returns>The equation with exponants evaluated.</returns>
         private static string Exponants(string eq)
         {
+            // Keep looping while there are still exponants in the equation
             while (true)
             {
                 if (exponantRegex.Matches(eq).Count > 0)
                 {
+                    // Get the first remaining exponant
                     var match = exponantRegex.Match(eq);
 
+                    // Parse the numbers as doubles and evaluate the exponant
                     var nums = new double[] { double.Parse(match.Groups["num1"].Value), double.Parse(match.Groups["num2"].Value) };
                     eq = eq.Replace(match.Value, Math.Pow(nums[0], nums[1]).ToString());
                 }
@@ -146,14 +159,19 @@ namespace Calculator
         /// Solves the division and multiplication in the given equation.
         /// </summary>
         /// <param name="eq">Equation to solve.</param>
+        /// <returns>The equation with divisions and multiplications evaluated.</returns>
         private static string DivMult(string eq)
         {
+            // Keep looping while there are still divisions or multiplications in the equation
             while (true)
             {
                 if (divMultRegex.Matches(eq).Count > 0)
                 {
+                    // Get the first remaining division or multiplication
                     var match = divMultRegex.Match(eq);
 
+                    // Get the operator: "*" or "/"
+                    // Parse the numbers as doubles
                     var op = match.Groups["op"].Value;
                     var nums = new double[] { double.Parse(match.Groups["num1"].Value), double.Parse(match.Groups["num2"].Value) };
 
@@ -161,6 +179,7 @@ namespace Calculator
                     if (nums[1] == 0 && op == "/")
                         throw new DivideByZeroException($"Can\'t divide {nums[0]} by 0");
 
+                    // Evaluate the multiplication or division
                     eq = eq.Replace(match.Value, op == "*" ?
                         (nums[0] * nums[1]).ToString() :
                         (nums[0] / nums[1]).ToString());
@@ -174,17 +193,23 @@ namespace Calculator
         /// Solves the addition and subtraction in the given equation.
         /// </summary>
         /// <param name="eq">Equation to solve.</param>
+        /// <returns>The equation with additions and subtractions evaluated.</returns>
         private static string AddSub(string eq)
         {
+            // Keep looping while there are still additions or subtractions in the equation
             while (true)
             {
                 if (addSubRegex.Matches(eq).Count > 0)
                 {
+                    // Get the first remaining addition or subtraction
                     var match = addSubRegex.Match(eq);
 
+                    // Get the operator: "+" or "-"
+                    // Parse the numbers as doubles
                     var op = match.Groups["op"].Value;
                     var nums = new double[] { double.Parse(match.Groups["num1"].Value), double.Parse(match.Groups["num2"].Value) };
 
+                    // Evaluate the addition or subtraction
                     eq = eq.Replace(match.Value, op == "+" ?
                         (nums[0] + nums[1]).ToString() :
                         (nums[0] - nums[1]).ToString());

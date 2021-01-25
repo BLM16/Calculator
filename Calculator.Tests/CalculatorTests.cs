@@ -119,10 +119,10 @@ namespace Calculator.Tests
         }
 
         /// <summary>
-        /// Checks that equations containing exponents are solved correctly.
+        /// Checks that equations containing exponants are solved correctly.
         /// </summary>
         [TestMethod]
-        public void Solve_Exponents()
+        public void Solve_Exponants()
         {
             var equation = "3^5";
             var expected = "243";

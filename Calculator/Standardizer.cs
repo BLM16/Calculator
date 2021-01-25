@@ -16,8 +16,10 @@ namespace Calculator
         /// <returns>The standardized string.</returns>
         public static string Standardize(string eq)
         {
+            // Remove spaces from the equation because they are irrelevant
             eq = eq.Replace(" ", "");
 
+            // Call local functions to standardize the equation
             eq = FixBrackets(eq);
             eq = ReplaceSpecChars(eq);
             eq = AddMultSigns(eq);
@@ -33,22 +35,23 @@ namespace Calculator
         /// <returns>The fixed equation.</returns>
         public static string FixBrackets(string eq)
         {
+            // Counters for the number of each bracket
             int lBrack = 0, rBrack = 0;
 
             // Strip all '(' at the end of the equation if any
             var endLBrackPattern = new Regex(@"\(+$");
             eq = endLBrackPattern.Replace(eq, "");
 
-            // Count the number of brackets
+            // Count the number of each bracket
             foreach (var c in eq)
             {
                 if (c == '(') lBrack++;
                 if (c == ')') rBrack++;
             }
 
-            // Fix brackets where possible or throw illegal syntax error
+            // Fix brackets where possible or throw a MathSyntaxError
             if (rBrack > lBrack)
-                throw new MathSyntaxError("Too many right brackets");
+                throw new MathSyntaxError("Too many closing brackets");
             else if (lBrack > rBrack)
                 for (int i = rBrack; i < lBrack; i++)
                     eq += ")";
