@@ -73,10 +73,7 @@ namespace Calculator.Tests
         [TestMethod]
         [ExpectedException(typeof(MathSyntaxError))]
         public void FixBrackets_ExceptionOnTooManyRightBracks()
-        {
-            var equation = "(32*7)+4(3)+17)";
-            Standardizer.FixBrackets(equation);
-        }
+            => Standardizer.FixBrackets("(32*7)+4(3)+17)");
 
         #endregion
 

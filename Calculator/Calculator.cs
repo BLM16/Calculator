@@ -52,6 +52,9 @@ namespace Calculator
                 // Valid: x.xx - Invalid: x. - Invalid: x./
                 if (eq[i] == '.' && (i + 1 > eq.Length || (!"0123456789".Contains(eq[i + 1].ToString()))))
                     throw new MathSyntaxError($"Decimals must be followed by valid digits - @Ch:{i + 1}");
+
+                if ("^/*+-".Contains(eq[i].ToString()) && (i + 1 > eq.Length || "^/*+-".Contains(eq[i + 1].ToString())))
+                    throw new MathSyntaxError($"Consecutive operators - @Ch:{i + 1}");
             }
         }
 

@@ -90,6 +90,14 @@ namespace Calculator.Tests
         public void FindErrors_ExceptionOnNonNumericValueAfterDecimal()
             => Calculator.FindErrors("32.+9");
 
+        [DataTestMethod]
+        [DataRow("32++7")]
+        [DataRow("19(+4)*/6")]
+        [DataRow("7^^6")]
+        [ExpectedException(typeof(MathSyntaxError))]
+        public void FindErrors_ExceptionOnConsecutiveOperators(string equation)
+            => Calculator.FindErrors(equation);
+
         #endregion
 
         #region Solve
@@ -160,10 +168,7 @@ namespace Calculator.Tests
         [TestMethod]
         [ExpectedException(typeof(DivideByZeroException))]
         public void Solve_ExceptionOnDivisionByZero()
-        {
-            var equation = "321/(3-3)";
-            Calculator.Solve(equation);
-        }
+            => Calculator.Solve("321/(3-3)");
 
         /// <summary>
         /// Checks that equations containing the pi '#' are converted and solved correctly.
