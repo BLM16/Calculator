@@ -63,16 +63,14 @@ namespace Calculator
         /// <returns>The operator standardized equation.</returns>
         public static string ReplaceSpecChars(string eq)
         {
-            var rootPattern = new Regex("root", RegexOptions.IgnoreCase);
-            var piPattern = new Regex("pi", RegexOptions.IgnoreCase);
-
             // Replace square root "operators" with a standard: @
-            eq = rootPattern.Replace(eq, "@");
+            eq = eq.ToLower().Replace("root", "@");
+            eq = eq.ToLower().Replace("sqrt", "@");
             eq = eq.Replace("√", "@");
 
 
             // Replace pi "operators" with a standard: #
-            eq = piPattern.Replace(eq, "#");
+            eq = eq.ToLower().Replace("pi", "#");
             eq = eq.Replace("π", "#");
 
             // Replace multiplication and division signs with the standards: * and /

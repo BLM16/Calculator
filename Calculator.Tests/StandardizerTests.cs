@@ -96,6 +96,21 @@ namespace Calculator.Tests
             var actual = Standardizer.ReplaceSpecChars(equation);
             Assert.AreEqual(expected, actual);
         }
+        
+        /// <summary>
+        /// Checks that the case-insensitive word 'root' gets replaced with an '@' sign.
+        /// </summary>
+        /// <param name="equation">Equation to test.</param>
+        /// <param name="expected">Expected result.</param>
+        [DataTestMethod]
+        [DataRow("(35+7)sqrt(9)", "(35+7)@(9)")] // Lowercase word root
+        [DataRow("(35+7)SQRT(9)", "(35+7)@(9)")] // Uppercase word root
+        [DataRow("(35+7)SqRt(9)", "(35+7)@(9)")] // Mixedcase word root
+        public void ReplaceSpecChars_ConvertsWordSqrtToAtSign(string equation, string expected)
+        {
+            var actual = Standardizer.ReplaceSpecChars(equation);
+            Assert.AreEqual(expected, actual);
+        }
 
         /// <summary>
         /// Checks that the square root symbol gets replaced with an '@' sign.
