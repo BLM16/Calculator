@@ -8,6 +8,14 @@ namespace Calculator
     /// </summary>
     public static class Calculator
     {
+        // Define regexes used for solving
+        private static readonly Regex bracketPattern = new Regex(@"(?<!@)\((?<eq>\d+(\.\d+)?([\^@/\*\+\-])?\d+([\^@/\*\+\-0-9.]+)?)\)");
+        private static readonly Regex numberBracketPattern = new Regex(@"(?<!@)\((?<num>\d+(\.\d+)?)\)");
+        private static readonly Regex sqrtRexex = new Regex(@"@\((?<eq>\d+(\.\d+)?([\^@/\*\+\-0-9.]+)?)\)");
+        private static readonly Regex exponantRegex = new Regex(@"(?<num1>\d+(\.\d+)?)\^(?<num2>\d+(\.\d+)?)");
+        private static readonly Regex divMultRegex = new Regex(@"(?<num1>\d+(\.\d+)?)(?<op>[\*\/])(?<num2>\d+(\.\d+)?)");
+        private static readonly Regex addSubRegex = new Regex(@"(?<num1>\d+(\.\d+)?)(?<op>[\+\-])(?<num2>\d+(\.\d+)?)");
+
         /// <summary>
         /// Handles calling the required methods in order to properly calculate the math in a string.
         /// </summary>
@@ -67,41 +75,32 @@ namespace Calculator
         /// <returns>The solved equation.</returns>
         public static string Solve(string eq)
         {
-            var bracketPattern = new Regex(@"(?<!@)\((?<eq>\d+(\.\d+)?([\^@/\*\+\-])?\d+([\^@/\*\+\-0-9.]+)?)\)");
-            var numberBracketPattern = new Regex(@"(?<!@)\((?<num>\d+(\.\d+)?)\)");
-
             // Convert the standardized pi symbol to Math.PI
             eq = eq.Replace("#", Math.PI.ToString());
 
-            foreach (Match match in numberBracketPattern.Matches(eq))
-                eq = eq.Replace(match.Value, match.Groups["num"].Value);
-
-            // Cycle through all the brackets following BEDMAS order and replace them with their solved version
             while (true)
             {
-                var bracketEquation = bracketPattern.Match(eq);
+                foreach (Match match in numberBracketPattern.Matches(eq))
+                    eq = eq.Replace(match.Value, match.Groups["num"].Value);
 
-                if (bracketEquation.Length == 0)
-                    break;
+                if (sqrtRexex.Matches(eq).Count > 0)
+                    eq = Sqrt(eq);
 
-                eq = eq.Replace(bracketEquation.Value, Solve(bracketEquation.Value.Substring(1, bracketEquation.Length - 2)));
-            }
-            
-            // Call the local functions to evaluate the equation following BEDMAS order
-            eq = Sqrt(eq);
-            eq = Exponants(eq);
-            eq = DivMult(eq);
-            eq = AddSub(eq);
-
-            while (true)
-            {
                 if (bracketPattern.Matches(eq).Count > 0)
-                    eq = Solve(eq);
-                else
-                    break;
-            }
+                {
+                    var bracketEquation = bracketPattern.Match(eq);
 
-            return eq;
+                    eq = eq.Replace(bracketEquation.Value, Solve(bracketEquation.Value.Substring(1, bracketEquation.Length - 2)));
+                }
+                else
+                {
+                    eq = Exponants(eq);
+                    eq = DivMult(eq);
+                    eq = AddSub(eq);
+
+                    return eq;
+                }
+            }
         }
 
         /// <summary>
@@ -110,27 +109,17 @@ namespace Calculator
         /// <param name="eq">Equation to solve.</param>
         private static string Sqrt(string eq)
         {
-            //var re = new Regex(@"@\((?<num>\d+(\.\d+)?)\)");
-            var sqrtRexex = new Regex(@"@\((?<eq>\d+(\.\d+)?([\^@/\*\+\-0-9.]+)?)\)");
-            var matches = sqrtRexex.Matches(eq);
-
-            foreach (Match match in matches)
-            {
-                //eq = eq.Replace(match.Value, Solve(match.Groups["eq"].Value));
-
-                var num = double.Parse(Solve(match.Groups["eq"].Value));
-                eq = eq.Replace(match.Value, Math.Sqrt(num).ToString());
-            }
-
             while (true)
             {
                 if (sqrtRexex.Matches(eq).Count > 0)
-                    eq = Sqrt(eq);
+                {
+                    var match = sqrtRexex.Match(eq);
+                    var num = double.Parse(Solve(match.Groups["eq"].Value));
+                    eq = eq.Replace(match.Value, Math.Sqrt(num).ToString());
+                }
                 else
-                    break;
+                    return eq;
             }
-
-            return eq;
         }
 
         /// <summary>
@@ -139,26 +128,18 @@ namespace Calculator
         /// <param name="eq">Equation to solve.</param>
         private static string Exponants(string eq)
         {
-            var exponantRegex = new Regex(@"(?<num1>\d+(\.\d+)?)\^(?<num2>\d+(\.\d+)?)");
-            var matches = exponantRegex.Matches(eq);
-
-            foreach (Match match in matches)
-            {
-                var groups = match.Groups;
-
-                var nums = new double[] { double.Parse(groups["num1"].Value), double.Parse(groups["num2"].Value) };
-                eq = eq.Replace(match.ToString(), Math.Pow(nums[0], nums[1]).ToString());
-            }
-
             while (true)
             {
                 if (exponantRegex.Matches(eq).Count > 0)
-                    eq = Exponants(eq);
-                else
-                    break;
-            }
+                {
+                    var match = exponantRegex.Match(eq);
 
-            return eq;
+                    var nums = new double[] { double.Parse(match.Groups["num1"].Value), double.Parse(match.Groups["num2"].Value) };
+                    eq = eq.Replace(match.Value, Math.Pow(nums[0], nums[1]).ToString());
+                }
+                else
+                    return eq;
+            }
         }
 
         /// <summary>
@@ -167,34 +148,26 @@ namespace Calculator
         /// <param name="eq">Equation to solve.</param>
         private static string DivMult(string eq)
         {
-            var divMultRegex = new Regex(@"(?<num1>\d+(\.\d+)?)(?<op>[\*\/])(?<num2>\d+(\.\d+)?)");
-            var matches = divMultRegex.Matches(eq);
-
-            foreach (Match match in matches)
-            {
-                var groups = match.Groups;
-
-                var op = groups["op"].Value;
-                var nums = new double[] { double.Parse(groups["num1"].Value), double.Parse(groups["num2"].Value) };
-
-                // Handle divide by 0 errors
-                if (nums[1] == 0 && op == "/")
-                    throw new DivideByZeroException($"can\'t divide {nums[0]} by 0");
-
-                eq = eq.Replace(match.ToString(), op == "*" ?
-                    (nums[0] * nums[1]).ToString() :
-                    (nums[0] / nums[1]).ToString());
-            }
-
             while (true)
             {
                 if (divMultRegex.Matches(eq).Count > 0)
-                    eq = DivMult(eq);
-                else
-                    break;
-            }
+                {
+                    var match = divMultRegex.Match(eq);
 
-            return eq;
+                    var op = match.Groups["op"].Value;
+                    var nums = new double[] { double.Parse(match.Groups["num1"].Value), double.Parse(match.Groups["num2"].Value) };
+
+                    // Handle divide by 0 errors
+                    if (nums[1] == 0 && op == "/")
+                        throw new DivideByZeroException($"Can\'t divide {nums[0]} by 0");
+
+                    eq = eq.Replace(match.Value, op == "*" ?
+                        (nums[0] * nums[1]).ToString() :
+                        (nums[0] / nums[1]).ToString());
+                }
+                else
+                    return eq;
+            }
         }
 
         /// <summary>
@@ -203,30 +176,22 @@ namespace Calculator
         /// <param name="eq">Equation to solve.</param>
         private static string AddSub(string eq)
         {
-            var addSubRegex = new Regex(@"(?<num1>\d+(\.\d+)?)(?<op>[\+\-])(?<num2>\d+(\.\d+)?)");
-            var matches = addSubRegex.Matches(eq);
-
-            foreach (Match match in matches)
-            {
-                var groups = match.Groups;
-
-                var op = groups["op"].Value;
-                var nums = new double[] { double.Parse(groups["num1"].Value), double.Parse(groups["num2"].Value) };
-
-                eq = eq.Replace(match.ToString(), op == "+" ?
-                    (nums[0] + nums[1]).ToString() :
-                    (nums[0] - nums[1]).ToString());
-            }
-
             while (true)
             {
                 if (addSubRegex.Matches(eq).Count > 0)
-                    eq = AddSub(eq);
-                else
-                    break;
-            }
+                {
+                    var match = addSubRegex.Match(eq);
 
-            return eq;
+                    var op = match.Groups["op"].Value;
+                    var nums = new double[] { double.Parse(match.Groups["num1"].Value), double.Parse(match.Groups["num2"].Value) };
+
+                    eq = eq.Replace(match.Value, op == "+" ?
+                        (nums[0] + nums[1]).ToString() :
+                        (nums[0] - nums[1]).ToString());
+                }
+                else
+                    return eq;
+            }
         }
     }
 }
